@@ -46,8 +46,8 @@ class TextSplitter:
         self.character_separator = character_separator
 
         self.special_case_handler_fn = [
-            self._url_handler,
             self._decimal_handler,
+            self._url_handler,            
             self._abbreviation_handler,
         ]
 
@@ -106,7 +106,7 @@ class TextSplitter:
                 r"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)",
                 lambda match: match.group().replace(".", "@-@"),
                 text,
-            )
+            )         
         else:
             text = text.replace("@-@", ".")
         return text
@@ -139,8 +139,9 @@ class TextSplitter:
         Returns:
             str: Text with handled special cases.
         """
-        for fn in self.special_case_handler_fn:
-            text = fn(text, alter)
+        text = self._abbreviation_handler(text, alter)
+        text = self._decimal_handler(text, alter)
+        text = self._url_handler(text, alter)
         return text
 
     def _merge(

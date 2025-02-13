@@ -47,30 +47,15 @@ class FileReader:
     def __init__(
         self,
         input_dir: str,
-        vector_store_metadata: Dict[str, Dict[str, Union[str, int, float]]],
     ):
         """Initialize FileReader with directory path, filesystem, tags, and document name-id mapping.
 
         Args:
             input_dir (str): Directory path to read files from.
-            vector_store_metadata (Dict[str, Dict[str, Union[str, int]]]):
-                Map of doc_id to document metadata.
-                Each inner dictionary contains Weaviate node schema properties:
-                    - "doc_name": Name of the document (str).
-                    - "embedding_model_name": Name of the embedding model used (str).
-                    - "embedding_dimensions": Dimensionality of the embedding (int).
-                    - "doc_type": Type of the document (str).
-                    - "doc_url": URL of the document (str).
-                    - "chunk_size": Size of each document chunk (int).
-                    - "chunk_overlap": Chunk overlap buffer upper limit (float).
-                    - "verloop_doc_id": Unique doc_id identifier stored in mongo db for the client (str).
-                    - "weaviate_doc_id": Unique doc_id identifier stored in mongo db for the client (str).
-                    - "tags": List of comma-separated tags for the document (str).
-                        Example: {..., "tags" : {"doc1":"cancel, refund, ecom"}}
         """
         self.inp_dir = input_dir
         self.text_splitter = TextSplitter(chunk_size=CHUNK_SIZE)
-        self.vector_store_metadata = vector_store_metadata
+        
 
     def load_data(self) -> List[TextNode]:
         """Load data from files in the specified directory.
@@ -116,9 +101,14 @@ class FileReader:
             List[TextNode]: List of text nodes extracted from the file.
         """
 
-        # doc_id = get_doc_id(filepath)
-        doc_id = "sample"
-        doc_metadata = self.vector_store_metadata[doc_id]
+        doc_name = Path(filepath).stem
+        doc_type = Path(filepath).suffix
+        doc_metadata = {
+            "doc_name": doc_name,
+            "doc_type": doc_type,
+            "chunk_size": CHUNK_SIZE,
+            "chunk_overlap": 1.4
+        }
 
         with open(filepath, encoding="utf-8") as f:
             content = f.read()
@@ -283,8 +273,8 @@ if __name__ == "__main__":
     md_dir = "/home/asha/verloop/ai_assist_chunking/train_docs"
     md_files = os.listdir(md_dir)
     processed_dir = os.path.join(md_dir, "processed")
-    if not os.path.exists(processed_dir):
-        os.mkdir(processed_dir)
+    if not os.path.exists(md_dir):
+        os.mkdir(md_dir)
 
     for md_file in md_files:
         md_filepath = os.path.join(md_dir, md_file)
@@ -310,22 +300,8 @@ if __name__ == "__main__":
         with open(processed_filepath, "w", encoding="UTF-8") as f:
             f.write(new_content)
 
-    vector_store_metadata = {
-        "sample": {
-            "doc_name": "sample",
-            "embedding_model_name": "OPENAI-text-embedding-ada-002",
-            "embedding_dimensions": 1563,
-            "doc_type": "md",
-            "doc_url": "",
-            "chunk_size": 256,
-            "chunk_overlap": 1.4,
-            "verloop_doc_id": "sample",
-            "weaviate_doc_id": "sample",
-            "tags": "txt",
-        }
-    }
     file_reader = FileReader(
-        input_dir=processed_dir, vector_store_metadata=vector_store_metadata
+        input_dir=processed_dir
     )
     tokenizer = tiktoken.encoding_for_model("gpt-3.5-turbo")
     nodes = file_reader.load_data()
