@@ -139,11 +139,10 @@ class TextSplitter:
         Returns:
             str: Text with handled special cases.
         """
-        text = self._abbreviation_handler(text, alter)
-        text = self._decimal_handler(text, alter)
-        text = self._url_handler(text, alter)
+        for fn in self.special_case_handler_fn:
+            text = fn(text, alter)
         return text
-
+    
     def _merge(
         self, splits: List[Tuple[str, str]], chunk_size_limit: int
     ) -> List[Tuple[str, str]]:
