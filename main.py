@@ -1,5 +1,5 @@
 from src.file_reader import FileReader, process_md, LOGGER
-from src.settings import MD_DIR_PATH, PROCESSED_DIR_PATH, CHUNK_SIZE
+from src.settings import MD_DIR_PATH, PROCESSED_DIR_PATH
 from pathlib import Path
 
 
@@ -29,4 +29,4 @@ if md_paths:
 else:
     LOGGER.info("No MD files found")
 
-nodes = FileReader(input_dir=PROCESSED_DIR_PATH).load_data()
+chunks = FileReader(input_dir=PROCESSED_DIR_PATH).load_data()

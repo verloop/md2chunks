@@ -104,7 +104,7 @@ class FileReader:
                         )
                     )
                 else:
-                    LOGGER.info(f"Ignoring non md or non txt file: {filepath.stem}")
+                    LOGGER.info(f"Ignoring non md or non txt file: {filepath}")
         except:
             LOGGER.exception("FileReader load_data failed")
             raise
