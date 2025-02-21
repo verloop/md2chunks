@@ -1,5 +1,3 @@
-
-
 # Text Splitter configurations
 
 CHUNK_SIZE = 256
@@ -11,3 +9,5 @@ CHARACTER_SEPARATOR = ["\n\n", "\n", ".", " "]
 PARAGRAPH_SEPARATOR = "\n\n\n"
 BREAK_SEPARATOR = "\n---\n"
 tokenizer = "gpt-3.5-turbo"
+MD_DIR_PATH = "/Users/rajeevwarrier/Documents/md_folder"
+PROCESSED_DIR_PATH = "/Users/rajeevwarrier/Documents/processed_folder"
