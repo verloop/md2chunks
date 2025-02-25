@@ -9,7 +9,7 @@
 
 ## Setup
 
-This environment is is setup using UV. Board the UV train, life is easier.
+This environment is setup using UV. Board the UV train, life is easier.
 
 1. [Install UV](https://docs.astral.sh/uv/getting-started/installation/#uninstallation)
 2. Build Virtual Environment: `uv sync`
