@@ -5,6 +5,7 @@
 - **Markdown Processing**: Converts markdown files to structured text.
 - **Text Splitting**: Splits text into chunks based on token count, with special handling for URLs, decimals, and abbreviations.
 - **Context Enrichment**: Adds context to each chunk to maintain the hierarchical structure of the original document.
+- **Logging**: Provides detailed logging for debugging and monitoring.
 
 ## Setup
 
@@ -25,10 +26,13 @@ That way, all you have to do is run:
 
 4. In `src/settings.py` enter your Markdown directory path in `MD_DIR_PATH` and add your markdown files inside it.
 5. Create a folder to store processed markdown files (so that original files remain intact) and provide that path in the `PROCESSED_DIR_PATH` inside `src/settings.py`
-5. Run `uv python main.py`
+Note: This is an intermediate file and is only useful for debugging purposes.
+6. Run `python main.py`
 
 Note: `main.py` only returns the chunks to a variable and quits the program. You are free to extend it your usecase.
 Incase you want to visualise the chunks, refer to `visualisation.ipynb`. To look at the chunks run the notebook instead of step 5.
+6. logs can be found inside the `logs` folder
+7. Post use run `deactivate`
 
 ## License
 Please refer to [LICENSE](https://github.com/verloop/md2chunks/blob/master/LICENSE)
