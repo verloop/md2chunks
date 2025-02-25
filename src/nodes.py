@@ -1,4 +1,5 @@
-from typing import Dict, List, Union
+from typing import Dict, Union
+
 
 class NodeRelationship:
     SOURCE = "source"
@@ -7,7 +8,12 @@ class NodeRelationship:
 
 
 class TextNode:
-    def __init__(self, text: str, metadata: Dict[str, Union[str, int, float]], relationships: Dict[str, 'TextNode'] = None):
+    def __init__(
+        self,
+        text: str,
+        metadata: Dict[str, Union[str, int, float]],
+        relationships: Dict[str, "TextNode"] = None,
+    ):
         self.text = text
         self.metadata = metadata
         self.relationships = relationships if relationships else {}

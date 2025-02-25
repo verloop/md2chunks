@@ -1,5 +1,3 @@
-
-
 # Text Splitter configurations
 
 CHUNK_SIZE = 256
@@ -10,4 +8,6 @@ abbreviations = ["eg.", "i.e.", "vs.", "Dr.", "Mr.", "Ms."]
 CHARACTER_SEPARATOR = ["\n\n", "\n", ".", " "]
 PARAGRAPH_SEPARATOR = "\n\n\n"
 BREAK_SEPARATOR = "\n---\n"
-tokenizer = "gpt-3.5-turbo"
+tokenizer = "gpt-4o"
+MD_DIR_PATH = "md_files/"
+PROCESSED_DIR_PATH = f"{MD_DIR_PATH}/processed_folder/"

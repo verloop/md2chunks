@@ -2,7 +2,7 @@ import copy
 import os
 import re
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import List
 
 from bs4 import BeautifulSoup
 from src.nodes import NodeRelationship, TextNode
@@ -12,7 +12,6 @@ from markdownify import MarkdownConverter
 from src import LOGGER
 from src.settings import CHUNK_SIZE
 from src.text_splitter import TextSplitter
-
 
 
 def md(soup: BeautifulSoup) -> str:
@@ -30,6 +29,29 @@ def md(soup: BeautifulSoup) -> str:
             "escape_misc": False,
         }
     ).convert_soup(soup)
+
+
+def process_md(md_text: str) -> str:
+    """Process and streamline markdown content
+
+    Args:
+        md_text (str): Raw markdown text
+
+    Returns:
+        str: Processed markdown text
+    """
+    html = markdown(md_text, extensions=["tables"])
+    # remove code snippets
+    html = re.sub(r"<pre>(.*?)</pre>", " ", html)
+    html = re.sub(r"<code>(.*?)</code >", " ", html)
+    # remove images
+    html = re.sub(r"!{1}\[\[(.*)\]\]", "", html)
+    # remove additional newlines
+    html = re.sub(">\n{1,}<", "><", html)
+
+    # extract text
+    soup = BeautifulSoup(html, "html.parser")
+    return md(soup)
 
 
 class FileReader:
@@ -55,7 +77,6 @@ class FileReader:
         """
         self.inp_dir = input_dir
         self.text_splitter = TextSplitter(chunk_size=CHUNK_SIZE)
-        
 
     def load_data(self) -> List[TextNode]:
         """Load data from files in the specified directory.
@@ -83,7 +104,7 @@ class FileReader:
                         )
                     )
                 else:
-                    LOGGER.info(f"Ignoring non md or non txt file: {filepath.stem}")
+                    LOGGER.info(f"Ignoring non md or non txt file: {filepath}")
         except:
             LOGGER.exception("FileReader load_data failed")
             raise
@@ -107,7 +128,7 @@ class FileReader:
             "doc_name": doc_name,
             "doc_type": doc_type,
             "chunk_size": CHUNK_SIZE,
-            "chunk_overlap": 1.4
+            "chunk_overlap": 1.4,
         }
 
         with open(filepath, encoding="utf-8") as f:
@@ -265,69 +286,3 @@ class FileReader:
         )
 
         return final_text
-
-
-if __name__ == "__main__":
-    import tiktoken
-
-    md_dir = "/home/asha/verloop/ai_assist_chunking/train_docs"
-    md_files = os.listdir(md_dir)
-    processed_dir = os.path.join(md_dir, "processed")
-    if not os.path.exists(md_dir):
-        os.mkdir(md_dir)
-
-    for md_file in md_files:
-        md_filepath = os.path.join(md_dir, md_file)
-        processed_filepath = os.path.join(processed_dir, md_file)
-        if os.path.isdir(md_filepath):
-            continue
-        with open(md_filepath, encoding="utf-8", errors="ignore") as f:
-            content = f.read()
-
-        html = markdown(content, extensions=["tables"])
-        # remove code snippets
-        html = re.sub(r"<pre>(.*?)</pre>", " ", html)
-        html = re.sub(r"<code>(.*?)</code >", " ", html)
-        # remove images
-        html = re.sub(r"!{1}\[\[(.*)\]\]", "", html)
-        # remove additional newlines
-        html = re.sub(">\n{1,}<", "><", html)
-
-        # extract text
-        soup = BeautifulSoup(html, "html.parser")
-
-        new_content = md(soup)
-        with open(processed_filepath, "w", encoding="UTF-8") as f:
-            f.write(new_content)
-
-    file_reader = FileReader(
-        input_dir=processed_dir
-    )
-    tokenizer = tiktoken.encoding_for_model("gpt-3.5-turbo")
-    nodes = file_reader.load_data()
-    prev_metadata = ""
-    start = True
-    for node in nodes:
-        inside_limit = False
-        metadata_str: str = "\n".join(
-            [f"{key}: {value}" for key, value in node.metadata.items()]
-        )
-        token_length = len(tokenizer.encode(node.text))
-        if token_length < ((CHUNK_SIZE - len(tokenizer.encode(metadata_str))) * 1.4):
-            inside_limit = True
-        if prev_metadata == node.metadata or start:
-            print(node.metadata)
-            print(f"Length of tokens: {token_length}")
-            print(f"Is chunk inside token limit?: {inside_limit}")
-            print(node.text)
-            print(100 * "-")
-        else:
-            print(100 * "=")
-            print(100 * "=")
-            print(node.metadata)
-            print(f"Length of tokens: {token_length}")
-            print(f"Is chunk inside token limit?: {inside_limit}")
-            print(node.text)
-            print(100 * "-")
-        start = False
-        prev_metadata = node.metadata

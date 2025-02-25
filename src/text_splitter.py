@@ -6,7 +6,12 @@ import tiktoken
 
 from src import LOGGER
 from src.settings import CHUNK_OVERLAP_BUFFER, CHUNK_SIZE, abbreviations
-from src.settings import CHARACTER_SEPARATOR, PARAGRAPH_SEPARATOR, BREAK_SEPARATOR,tokenizer
+from src.settings import (
+    CHARACTER_SEPARATOR,
+    PARAGRAPH_SEPARATOR,
+    BREAK_SEPARATOR,
+    tokenizer,
+)
 
 
 class TextSplitter:
@@ -47,7 +52,7 @@ class TextSplitter:
 
         self.special_case_handler_fn = [
             self._decimal_handler,
-            self._url_handler,            
+            self._url_handler,
             self._abbreviation_handler,
         ]
 
@@ -106,7 +111,7 @@ class TextSplitter:
                 r"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)",
                 lambda match: match.group().replace(".", "@-@"),
                 text,
-            )         
+            )
         else:
             text = text.replace("@-@", ".")
         return text
@@ -142,7 +147,7 @@ class TextSplitter:
         for fn in self.special_case_handler_fn:
             text = fn(text, alter)
         return text
-    
+
     def _merge(
         self, splits: List[Tuple[str, str]], chunk_size_limit: int
     ) -> List[Tuple[str, str]]:
