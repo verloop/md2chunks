@@ -1,7 +1,7 @@
 [project]
 name = "md2chunks"
 version = "0.1.0"
-description = "Add your description here"
+description = "Context Enriched Markdown Chunking for RAG"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
