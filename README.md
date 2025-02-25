@@ -34,6 +34,10 @@ Incase you want to visualise the chunks, refer to `visualisation.ipynb`. To look
 6. logs can be found inside the `logs` folder
 7. Post use run `deactivate`
 
+## Acknowledgements
+
+The idea of TextNodes in `src/nodes.py` is inspired from [LlamaIndex](https://github.com/run-llama/llama_index)
+
 ## License
 Please refer to [LICENSE](https://github.com/verloop/md2chunks/blob/master/LICENSE)
 
